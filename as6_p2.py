@@ -103,7 +103,7 @@ def get_credentials():
 
 class Iris:
     def __init__(self,creds,dbname='csc221',new=True):
-        self.__conn = mc.connector.connect(**creds) 
+        self.__conn = mc.connect(**creds) 
         self.__dbname = dbname
 
         if new:
