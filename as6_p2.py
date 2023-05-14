@@ -144,11 +144,12 @@ class Iris:
         cursor.execute("""
             CREATE TABLE iris (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                sepal_length FLOAT NOT NULL,
-                sepal_width FLOAT NOT NULL,
-                petal_length FLOAT NOT NULL,
-                petal_width FLOAT NOT NULL,
-                species VARCHAR(50) NOT NULL
+                feature_sepal_length FLOAT NOT NULL,
+                feature_sepal_width FLOAT NOT NULL,
+                feature_petal_length FLOAT NOT NULL,
+                feature_petal_width FLOAT NOT NULL,
+                target_species VARCHAR(50) NOT NULL
+                target_species_id INT NOT NULL)
             )
         """)
 
@@ -167,19 +168,17 @@ class Iris:
         cursor = self.__conn.cursor()
 
         if truncate:
-            # Truncate the iris table
             cursor.execute("TRUNCATE TABLE IRIS_DATA")
             print('Iris table truncated')
 
         # Loop the Iris data and insert into the IRIS_DATA table
         for row in self.__iris:
             query = f"""
-                INSERT INTO IRIS_DATA (sepal_length, sepal_width, petal_length, petal_width, species)
+                INSERT INTO IRIS_DATA (feature_sepal_length, feature_sepal_width, feature_petal_length, feature_petal_width, target_species, target_species_id)
                 VALUES ({row[0]}, {row[1]}, {row[2]}, {row[3]}, '{row[4]}')
             """
             cursor.execute(query)
 
-        # Commit the changes and close the cursor
         self.__conn.commit()
         cursor.close()
         print('Iris dataset loaded')
@@ -205,8 +204,6 @@ class Iris:
 
         # Update the observation with the given id
         cursor.execute(f"UPDATE IRIS_DATA SET species = '{new_target_species}', species_id = {new_target_species_id} WHERE id = {id}")
-
-        # Commit the changes and close the cursor
         self.__conn.commit()
         cursor.close()
 
@@ -232,11 +229,7 @@ class Iris:
     def __truncate_iris(self):
         # ------ Place code below here \/ \/ \/ ------
         cursor = self.__conn.cursor()
-
-        # Truncate the IRIS_DATA table
         cursor.execute("TRUNCATE TABLE IRIS_DATA")
-
-        # Commit the changes and close the cursor
         self.__conn.commit()
         cursor.close()
 
@@ -253,9 +246,9 @@ class Iris:
     # Returns the current row count of the IRIS_DATA table
     def get_row_count(self):
         # ------ Place code below here \/ \/ \/ ------
-        query = "SELECT COUNT(*) FROM IRIS_DATA"
         cursor = self.__conn.cursor()
-        cursor.execute(query)
+        cursor.execute(f"USE {self.__dbname}")
+        cursor.execute("SELECT COUNT(*) FROM iris_data")
         count = cursor.fetchone()[0]
         cursor.close()
 
