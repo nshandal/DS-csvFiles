@@ -113,7 +113,7 @@ class Iris:
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.__dbname}")
             cursor.execute(f"USE {self.__dbname}")
             cursor.execute("DROP TABLE IF EXISTS iris_data")
-            cursor.execute("CREATE TABLE iris_data (id INT NOT NULL,feature_sepal_length FLOAT NOT NULL,feature_sepal_width FLOAT NOT NULL,feature_petal_length FLOAT NOT NULL,feature_petal_width FLOAT NOT NULL,target_species VARCHAR(20) NOT NULL,target_species_id INT NOT NULL);")
+            cursor.execute("CREATE TABLE iris_data (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,feature_sepal_length FLOAT NOT NULL,feature_sepal_width FLOAT NOT NULL,feature_petal_length FLOAT NOT NULL,feature_petal_width FLOAT NOT NULL,target_species VARCHAR(20) NOT NULL,target_species_id INT NOT NULL);")
             self.__conn.commit()
             cursor.close()
             
@@ -165,22 +165,26 @@ class Iris:
         
     # Loop the Iris data and INSERT into the IRIS_DATA table
     def load(self,truncate=False):
-        cursor = self.__conn.cursor()
-
         if truncate:
+            cursor = self.__conn.cursor()
             cursor.execute("TRUNCATE TABLE IRIS_DATA")
+            cursor.close()
             print('Iris table truncated')
+    
+        iris_data = ds.load_iris()
+        iris_target_names = iris_data.target_names
 
-        # Loop the Iris data and insert into the IRIS_DATA table
-        for row in self.__iris:
+        for i in range(len(iris_data.target)):
             query = f"""
-                INSERT INTO IRIS_DATA (feature_sepal_length, feature_sepal_width, feature_petal_length, feature_petal_width, target_species, target_species_id)
-                VALUES ({row[0]}, {row[1]}, {row[2]}, {row[3]}, '{row[4]}')
+            INSERT INTO IRIS_DATA (feature_sepal_length, feature_sepal_width, feature_petal_length, feature_petal_width, target_species, target_species_id)
+            VALUES ({iris_data.data[i][0]}, {iris_data.data[i][1]}, {iris_data.data[i][2]}, {iris_data.data[i][3]}, '{iris_target_names[iris_data.target[i]]}', {iris_data.target[i]})
             """
+
+            cursor = self.__conn.cursor()
             cursor.execute(query)
+            cursor.close()
 
         self.__conn.commit()
-        cursor.close()
         print('Iris dataset loaded')
 
     # Display all rows that have ID greater than integer n
