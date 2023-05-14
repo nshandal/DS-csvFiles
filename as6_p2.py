@@ -88,7 +88,7 @@ def main():
     iris.load() # Load Iris data from sklearn and pump it into IRIS_DATA table
     iris.display_gt(140) # Display to the screen all rows with ID greater than 140
     
-    iris2 = Iris(creds,dbname='anotherone') # Creates a 2nd MySQL database called anotherone, you now have 2 databases (one server still, tho)
+    iris2 = Iris(creds,dbname='csc221x') # Creates a 2nd MySQL database called anotherone, you now have 2 databases (one server still, tho)
     iris2.load() # Load Iris data
     iris2.del_observations([0,1,2]) # Delete observations that have id equal to 0, 1 or 2
 
